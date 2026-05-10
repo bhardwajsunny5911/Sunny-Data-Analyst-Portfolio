@@ -275,6 +275,10 @@ body.light-mode nav {
   top: 0;
   left: 0;
 }
+
+body.light-mode #particles-js {
+    opacity: 0.4; /* Softens the dots so they don't distract from text in light mode */
+}
     </style>
 </head>
 <body>
@@ -470,16 +474,14 @@ body.light-mode nav {
         &copy; 2026 Sunny Bhardwaj. All rights reserved.
     </footer>
 
-    <script>
+  <script>
     const modeToggle = document.getElementById('modeToggle');
     const body = document.body;
     const icon = modeToggle.querySelector('i');
 
-    // Light/Dark Mode Logic
+    // 1. Light/Dark Mode Logic
     modeToggle.addEventListener('click', () => {
         body.classList.toggle('light-mode');
-        
-        // Switch Icon
         if (body.classList.contains('light-mode')) {
             icon.classList.replace('fa-moon', 'fa-sun');
         } else {
@@ -487,46 +489,59 @@ body.light-mode nav {
         }
     });
 
-    // Theme Color Logic
+    // 2. Theme Color Logic + Particle Update
     const dots = document.querySelectorAll('.color-dot');
+    
     dots.forEach(dot => {
         dot.addEventListener('click', () => {
-            // Remove active class from all
             dots.forEach(d => d.classList.remove('active'));
             dot.classList.add('active');
 
-            // Change the --primary CSS variable
             const newColor = dot.getAttribute('data-color');
+            
+            // Update CSS Variable
             document.documentElement.style.setProperty('--primary', newColor);
+
+            // UPDATE PARTICLES COLOR DYNAMICALLY
+            if (window.pJSDom && window.pJSDom.length > 0) {
+                // Update dots color
+                window.pJSDom[0].pJS.particles.color.value = newColor;
+                // Update lines color
+                window.pJSDom[0].pJS.particles.line_linked.color = newColor;
+                // Refresh the canvas to apply changes
+                window.pJSDom[0].pJS.fn.particlesRefresh();
+            }
         });
     });
 
-
+    // 3. Initial Particles Configuration
     particlesJS("particles-js", {
-    "particles": {
-      "number": { "value": 60 },
-      "color": { "value": "#00aaff" },
-      "shape": { "type": "circle" },
-      "opacity": { "value": 0.5 },
-      "size": { "value": 4 },
-      "line_linked": {
-        "enable": true,
-        "distance": 150,
-        "color": "#00aaff",
-        "opacity": 0.4,
-        "width": 1
-      },
-      "move": {
-        "enable": true,
-        "speed": 2
-      }
-    },
-    "interactivity": {
-      "events": {
-        "onhover": { "enable": true, "mode": "repulse" }
-      }
-    }
-  });
+        "particles": {
+            "number": { "value": 60 },
+            "color": { "value": "#38bdf8" }, // Set initial color to match your default --primary
+            "shape": { "type": "circle" },
+            "opacity": { "value": 0.5 },
+            "size": { "value": 3 },
+            "line_linked": {
+                "enable": true,
+                "distance": 150,
+                "color": "#38bdf8", // Set initial color to match your default --primary
+                "opacity": 0.3,
+                "width": 1
+            },
+            "move": {
+                "enable": true,
+                "speed": 2
+            }
+        },
+        "interactivity": {
+            "events": {
+                "onhover": { "enable": true, "mode": "grab" }, // 'grab' looks more "cyber" than repulse
+                "onclick": { "enable": true, "mode": "push" }
+            }
+        },
+        "retina_detect": true
+    });
 </script>
 
 </body>
